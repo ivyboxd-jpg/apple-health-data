@@ -27,7 +27,7 @@
     --cat-sleep: #A64DFF;
     --nav-bg: rgba(255, 255, 255, 0.85);
     --safe-top: 44px;
-    --safe-bottom: 34px;
+    --safe-bottom: env(safe-area-inset-bottom, 34px);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -45,12 +45,20 @@
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
   
+  /* FIXED VIEWPORT FOR MOBILE */
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: fixed; /* Locks the body so mobile browser bars don't hide the bottom */
+    overflow: hidden;
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
     background-color: var(--bg-primary);
     color: var(--label-primary);
-    overflow: hidden;
-    user-select: none;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -72,7 +80,7 @@
   .all-caps { text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* App Structure */
-  #app { position: relative; width: 100vw; height: 100vh; background: var(--bg-primary); }
+  #app { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); }
   
   .view {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -117,17 +125,17 @@
 
   /* Tab Bar */
   .tab-bar {
-    position: absolute; bottom: 0; width: 100%; height: calc(49px + var(--safe-bottom));
+    position: absolute; bottom: 0; left: 0; width: 100%; height: calc(49px + var(--safe-bottom));
     background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-top: 0.5px solid var(--separator); display: flex; justify-content: space-around;
-    padding-bottom: var(--safe-bottom); z-index: 100;
+    padding-bottom: var(--safe-bottom); z-index: 1000;
   }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--label-secondary); cursor: pointer; }
   .tab.active { color: var(--accent-blue); }
   .tab svg { width: 24px; height: 24px; margin-bottom: 2px; fill: currentColor; }
   .tab span { font-size: 10px; font-weight: 500; }
 
-  /* Improved Thinner Rings Component */
+  /* Rings Component */
   .rings-container { display: flex; justify-content: center; margin: 24px 0; position: relative; }
   .rings-svg { width: 280px; height: 280px; transform: rotate(-90deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
   .ring-track { fill: none; opacity: 0.15; stroke-width: 22; }
@@ -136,7 +144,6 @@
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     text-align: center;
   }
-  /* Font size properly scaled down so it fits gracefully inside the thinner ring */
   .ring-number { font-size: 36px; font-weight: 300; line-height: 1; margin-bottom: 2px; }
   
   /* SVG Icons */
@@ -206,9 +213,9 @@
         <div class="nav-back"></div>
         <div class="nav-title">Summary</div>
         <div class="nav-right">
-          <!-- Profile Link Added Here -->
+          <!-- PASTE IMAGE LINK 1 HERE (Around Line 151) -->
           <a href="#" onclick="return false;">
-            <img class="profile-icon" src="YOUR_IMAGE_LINK_HERE" alt="Profile" style="object-fit: cover; width: 32px; height: 32px; border-radius: 50%; background: #E5E5EA;">
+            <img class="profile-icon" src="https://i.postimg.cc/L8HbsHxK/IMG-9102.jpg" alt="Profile" style="object-fit: cover; width: 32px; height: 32px; border-radius: 50%; background: #E5E5EA;">
           </a>
         </div>
       </div>
@@ -219,16 +226,13 @@
         <div class="subheadline text-secondary" style="margin-top: 4px;">Monday, Mar 2</div>
       </div>
 
-      <!-- Hero Rings (Thinner & Partially open for the day's progress) -->
+      <!-- Hero Rings -->
       <div class="rings-container" onclick="nav('view-activity')">
         <svg class="rings-svg" viewBox="0 0 300 300">
-          <!-- Move (Red) - Radius 125, Circ: 785.4 - Progress: 16/24 (~66%) -> Offset ~ 262 -->
           <circle class="ring-track" cx="150" cy="150" r="125" stroke="var(--ring-move-end)"/>
           <circle class="ring-progress" cx="150" cy="150" r="125" stroke="url(#move-grad)" stroke-dasharray="785.4" stroke-dashoffset="262"/>
-          <!-- Exercise (Green) - Radius 100, Circ: 628.3 - Progress: 100% -> Offset 0 -->
           <circle class="ring-track" cx="150" cy="150" r="100" stroke="var(--ring-exercise-end)"/>
           <circle class="ring-progress" cx="150" cy="150" r="100" stroke="url(#exercise-grad)" stroke-dasharray="628.3" stroke-dashoffset="0"/>
-          <!-- Stand (Blue) - Radius 75, Circ: 471.2 - Progress: 15/16 (~93%) -> Offset 30 -->
           <circle class="ring-track" cx="150" cy="150" r="75" stroke="var(--ring-stand-end)"/>
           <circle class="ring-progress" cx="150" cy="150" r="75" stroke="url(#stand-grad)" stroke-dasharray="471.2" stroke-dashoffset="30"/>
         </svg>
@@ -395,7 +399,7 @@
       <div class="nav-content">
         <div class="nav-back" onclick="back()"><svg><use href="#icon-back"/></svg> Summary</div>
         <div class="nav-title">Heart</div>
-        <div class="nav-right"></div> <!-- Button removed -->
+        <div class="nav-right"></div>
       </div>
     </div>
     <div class="scroll-content">
@@ -493,13 +497,10 @@
       
       <div class="rings-container" style="margin: 16px 0;">
         <svg class="rings-svg" viewBox="0 0 300 300" style="width: 320px; height: 320px;">
-          <!-- Move - Scaled to match partially open status for 3:55 PM -->
           <circle class="ring-track" cx="150" cy="150" r="125" stroke="var(--ring-move-end)"/>
           <circle class="ring-progress" cx="150" cy="150" r="125" stroke="url(#move-grad)" stroke-dasharray="785.4" stroke-dashoffset="262"/>
-          <!-- Exercise -->
           <circle class="ring-track" cx="150" cy="150" r="100" stroke="var(--ring-exercise-end)"/>
           <circle class="ring-progress" cx="150" cy="150" r="100" stroke="url(#exercise-grad)" stroke-dasharray="628.3" stroke-dashoffset="0"/>
-          <!-- Stand -->
           <circle class="ring-track" cx="150" cy="150" r="75" stroke="var(--ring-stand-end)"/>
           <circle class="ring-progress" cx="150" cy="150" r="75" stroke="url(#stand-grad)" stroke-dasharray="471.2" stroke-dashoffset="30"/>
         </svg>
@@ -569,7 +570,7 @@
     </div>
   </div>
 
-  <!-- SCREEN 5: SLEEP DETAIL (Accurate 12:30 AM to 8:00 AM) -->
+  <!-- SCREEN 5: SLEEP DETAIL -->
   <div class="view" id="view-sleep">
     <div class="nav-bar">
       <div class="nav-content">
@@ -585,7 +586,6 @@
         <div style="display: flex; align-items: center; gap: 24px;">
           <div style="position: relative; width: 80px; height: 80px;">
             <svg viewBox="0 0 100 100" style="transform: rotate(-90deg);">
-              <!-- Thinner sleep score ring (stroke 6) and slightly open (Offset 37.6 = 85%) -->
               <circle cx="50" cy="50" r="40" stroke="var(--bg-secondary)" stroke-width="6" fill="none"/>
               <circle cx="50" cy="50" r="40" stroke="#34C759" stroke-width="6" stroke-dasharray="251.2" stroke-dashoffset="37.6" stroke-linecap="round" fill="none"/>
             </svg>
@@ -922,14 +922,16 @@
     <div class="nav-bar">
       <div class="nav-content">
         <div class="nav-title">Medical ID</div>
-        <div class="nav-right"></div> <!-- Button removed -->
+        <div class="nav-right"></div>
       </div>
     </div>
     <div class="scroll-content" style="background: var(--bg-secondary);">
       <div class="large-title-container"><div class="large-title">Medical ID</div></div>
 
       <div style="display: flex; flex-direction: column; align-items: center; margin: 24px 0;">
-        <img src="YOUR_IMAGE_LINK_HERE" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; background: var(--bg-tertiary); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <!-- PASTE IMAGE LINK 2 HERE (Around Line 534) -->
+        <img src="https://i.postimg.cc/L8HbsHxK/IMG-9102.jpg" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; background: var(--bg-tertiary); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        
         <div class="title-1 sf-rounded" style="font-weight: 600;">Hopelessly Yours</div>
         <div class="body text-secondary" style="margin-top: 4px;">Born for Her</div>
       </div>
